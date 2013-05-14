@@ -15,8 +15,11 @@ public interface ICache {
 	/**
 	 * To insert an element in the cache
 	 */
-	public void insert(Object o, Object obj) throws Exception;
-	
+	public void insert(String key, Object obj) throws Exception;
+	/**
+	 * Return an element of the cache using  the key
+	 */
+	public Object get(String key) throws Exception;
 	/**
 	 * return the the approximate number of entries in the cache
 	 */
