@@ -50,6 +50,17 @@ public class GuavaCache implements ICache{
 		cache.invalidateAll();
 		
 	}
+	public void delete(String key) throws Exception {
+		cache.invalidate(key);	
+	}
+	public void insert(String key, Object obj) throws Exception {
+		cache.asMap().put(key, (CachePopulating) obj);
+	}
+
+	
+	public CachePopulating get(String key) throws Exception {
+		return cache.get(key);
+	}
 
 
 }
