@@ -39,8 +39,16 @@ public class GuavaCache implements ICache{
 		this.TTL=TTL;
 		
 	}
-	public String getKey() throws Exception {
-		return null;
+	public boolean exists(String key) throws Exception {
+		String result;
+		return false;
+	}
+	public long size() throws Exception {
+		return cache.size();
+	}
+	public void deleteAll() throws Exception {
+		cache.invalidateAll();
+		
 	}
 
 
