@@ -19,7 +19,7 @@ public interface ICache {
 	/**
 	 * Return an element of the cache using  the key
 	 */
-	public Map<String, byte[]> getFamilyData(MetaInformation meta, String table, String key) throws CacheException;
+	public Map<String, byte[]> getFamilyData(MetaInformation meta, String table, String key,String family) throws CacheException;
 	/**
 	 * return the the approximate number of entries in the cache
 	 */

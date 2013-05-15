@@ -15,5 +15,10 @@
   		<artifactId>storage</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.google.guava</groupId>
+  		<artifactId>guava</artifactId>
+  		<version>14.0.1</version>
+  	</dependency>
   </dependencies>
 </project>
