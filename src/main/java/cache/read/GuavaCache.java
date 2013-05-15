@@ -23,7 +23,7 @@ public class GuavaCache implements ICache{
 	}
 	
 	/**
-	 * Returns the maximum size of our cache
+	 * Returns the maximum size of the cache
 	 */
 	public long getMaximunSize() throws Exception {
 		return MAX_SIZE;
@@ -39,7 +39,7 @@ public class GuavaCache implements ICache{
 		this.TTL=TTL;
 		
 	}
-	public boolean exists(String key) throws Exception {
+	public boolean exists(String key) throws Exception {  // the method putifpresent does'nt exist
 		String result;
 		return false;
 	}
