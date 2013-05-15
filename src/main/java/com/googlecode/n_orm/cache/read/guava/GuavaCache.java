@@ -1,11 +1,13 @@
 package com.googlecode.n_orm.cache.read.guava;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.common.cache.*;
+import com.googlecode.n_orm.cf.ColumnFamily;
 import com.googlecode.n_orm.storeapi.MetaInformation;
 
 public class GuavaCache implements ICache {
@@ -24,6 +26,10 @@ public class GuavaCache implements ICache {
 			throws CacheException {
 		String myKey = table.concat(key);
 		cache.invalidate(myKey);
+		
+		Collection<ColumnFamily<?>> cfs = meta.getElement().getColumnFamilies();/*Retourne toute les familles,
+		 et avec getName pour avoir le nom de la famille*/
+		
 
 	}
 
