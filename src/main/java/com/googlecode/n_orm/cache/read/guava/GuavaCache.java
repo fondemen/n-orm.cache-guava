@@ -49,6 +49,7 @@ public class GuavaCache implements ICache {
 
 	public long size() throws CacheException {
 		return cache.size();
+		
 	}
 
 	public void reset() throws CacheException {
