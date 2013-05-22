@@ -27,6 +27,7 @@ public class GuavaCacheTest {
 		long size=0;
 		assertEquals(size, gc.size());
 	}
+	@Test
 	public void testGetMaximunSize() throws CacheException{
 		assertEquals(10, gc.getMaximunSize());
 	}
