@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.googlecode.n_orm.cache.read.guava.CacheException;
 import com.googlecode.n_orm.cache.read.guava.GuavaCache;
 
 
@@ -25,6 +26,9 @@ public class GuavaCacheTest {
 	public void testGetSize() throws Exception{
 		long size=0;
 		assertEquals(size, gc.size());
+	}
+	public void testGetMaximunSize() throws CacheException{
+		assertEquals(10, gc.getMaximunSize());
 	}
 
 }
