@@ -1,7 +1,10 @@
 package com.googlecode.n_orm.cache.read.guava;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.HashBasedTable;
@@ -27,8 +30,7 @@ public class GuavaCache implements ICache {
 		String myKey = table.concat(key);
 		cache.invalidate(myKey);
 		
-		Collection<ColumnFamily<?>> cfs = meta.getElement().getColumnFamilies();/*Retourne toute les familles,
-		 et avec getName pour avoir le nom de la famille*/
+		Collection<ColumnFamily<?>> cfs = meta.getElement().getColumnFamilies();
 		
 
 	}
@@ -37,7 +39,7 @@ public class GuavaCache implements ICache {
 			String key, String family, Map<String, byte[]> familyData)
 			throws CacheException {
 		String myKey=table.concat(key).concat(family);
-		cache.put(myKey, familyData);
+		cache.put(myKey, Collections.unmodifiableMap(new TreeMap<String,byte[]>(familyData)));
 	}
 
 	public Map<String, byte[]> getFamilyData(MetaInformation meta,
