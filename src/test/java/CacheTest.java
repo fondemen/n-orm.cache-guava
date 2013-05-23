@@ -19,9 +19,7 @@ import com.googlecode.n_orm.conversion.ConversionTools;
 
 
 public class CacheTest {
-	final GuavaCache gc=new GuavaCache();
-	final int parallelGet=10;
-	
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		
@@ -29,6 +27,8 @@ public class CacheTest {
 	
 	@Test
 	public void parallelGetFamilyData() throws InterruptedException, ExecutionException, CacheException{
+		final GuavaCache gc=new GuavaCache();
+		final int parallelGet=10;
 		Map<String, byte[]> familyData=new HashMap<String, byte[]>();
 		byte[] Dupond = ConversionTools.convert("Dupont");
 		byte[] Jean = null;
@@ -43,7 +43,7 @@ public class CacheTest {
 			@Override
 			public Map<String, byte[]> call() throws Exception {
 				return gc.getFamilyData(null, "Person", "290", "props");
-			};
+			}
 		};
 	
 		Collection<Future<Map<String, byte[]>>> results=new LinkedList<Future<Map<String,byte[]>>>();
@@ -54,30 +54,60 @@ public class CacheTest {
 		es.shutdown();
 
 		for(Future<Map<String, byte[]>> f : results){
-			//System.out.println(f.get());
 			assertEquals(familyData, f.get());
 		}
+		assertEquals(1,gc.size());
 	}
 	
-	public void parallelInsertFamilyData(){
+	@Test
+	public void parallelFamilyData() throws CacheException, InterruptedException, ExecutionException{
+		
 		final GuavaCache gc=new GuavaCache();
+		final int parallelThread = 10;
+		
 		final Map<String, byte[]> familyData=new HashMap<String, byte[]>();
-		familyData.put("1", ConversionTools.convert(100));
-		familyData.put("2", ConversionTools.convert(100));
-		familyData.put("4", ConversionTools.convert(100));
-		Runnable r =new Runnable(){
-
+		final Map<String, byte[]> animalData=new HashMap<String, byte[]>();
+		
+		familyData.put("FirstName", ConversionTools.convert(10));
+		familyData.put("SecondName", ConversionTools.convert("20"));
+		
+		gc.insertFamilyData(null, "Person", "300", "Props", familyData);
+		
+		animalData.put("Age", ConversionTools.convert("20"));
+		animalData.put("Name", ConversionTools.convert("Lion"));
+		
+		gc.insertFamilyData(null, "Animal", "235", "Carnivore", animalData);
+		
+		Callable<Map<String, byte[]>> r = new Callable<Map<String, byte[]>>() {
 			@Override
-			public void run() {
-				try {
-					gc.insertFamilyData(null, "Person", "290", "props", familyData);
-				} catch (CacheException e) {
-					e.printStackTrace();
-					System.out.println("Error");
-				}
+			public Map<String, byte[]> call() throws Exception {
+					return gc.getFamilyData(null, "Person", "300", "props");
 			}
-			
 		};
+		
+		Callable<Map<String, byte[]>> rr = new Callable<Map<String, byte[]>>() {
+			@Override
+			public Map<String, byte[]> call() throws Exception {
+					return gc.getFamilyData(null, "Animal", "235", "Carnivore");
+					
+			}
+		};
+		Collection<Future<Map<String, byte[]>>> results=new LinkedList<Future<Map<String,byte[]>>>();
+		ExecutorService es= new FixedThreadPool(parallelThread);
+		for (int i = 0; i<parallelThread; i++){
+			if(i %2==0){
+			   results.add(es.submit(r));
+			   }
+			else{
+				results.add(es.submit(rr));
+			}
+		}
+		es.shutdown();
+		
+		for(Future<Map<String, byte[]>> f : results){
+			System.out.println("++++++++++++" + f.get());
+			}
+		
 	}
 
 }

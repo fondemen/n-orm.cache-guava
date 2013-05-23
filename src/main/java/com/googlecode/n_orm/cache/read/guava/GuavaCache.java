@@ -27,11 +27,10 @@ public class GuavaCache implements ICache {
 
 	public void delete(MetaInformation meta, String table, String key)
 			throws CacheException {
-		String myKey = table.concat(key);
-		cache.invalidate(myKey);
-		
 		Collection<ColumnFamily<?>> cfs = meta.getElement().getColumnFamilies();
-		
+		String familyName=cfs.getClass().getName();
+		String myKey = table.concat(key).concat(familyName);
+		cache.invalidate(myKey);
 
 	}
 
