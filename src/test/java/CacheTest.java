@@ -108,7 +108,6 @@ public class CacheTest {
 		
 		for(Future<Tuple<String, Map<String, byte[]>>> f : results)
 		{
-			//System.out.println(f.get().getY());
 			if(f.get().getX().equals("Person")){
 				assertEquals(familyData, f.get().getY());}
 			else{assertEquals(animalData, f.get().getY());}
