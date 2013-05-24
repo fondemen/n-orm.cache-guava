@@ -11,6 +11,8 @@ import com.googlecode.n_orm.storeapi.Row.ColumnFamilyData;
 import com.googlecode.n_orm.storeapi.Store;
 
 public class CacheStore implements Store{
+	// Mon cacheStore connait et utilise un cache
+	private GuavaCache ActualCache= new GuavaCache();
 
 	@Override
 	public void start() throws DatabaseNotReachedException {
@@ -26,9 +28,13 @@ public class CacheStore implements Store{
 	}
 
 	@Override
-	public void delete(MetaInformation meta, String table, String id)
+	public void delete(MetaInformation meta, String table, String id) // Here id is the key
 			throws DatabaseNotReachedException {
-		// TODO Auto-generated method stub
+		try {
+			ActualCache.delete(meta, table, id);
+		} catch (CacheException e) {
+			e.printStackTrace();
+		}
 		
 	}
 
