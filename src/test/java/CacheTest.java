@@ -2,6 +2,7 @@ import static org.junit.Assert.*;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -14,6 +15,7 @@ import org.junit.Test;
 
 import com.googlecode.n_orm.cache.read.guava.CacheException;
 import com.googlecode.n_orm.cache.read.guava.GuavaCache;
+import com.googlecode.n_orm.cache.read.guava.Tuple;
 import com.googlecode.n_orm.cache.write.FixedThreadPool;
 import com.googlecode.n_orm.conversion.ConversionTools;
 
@@ -63,36 +65,36 @@ public class CacheTest {
 	public void parallelFamilyData() throws CacheException, InterruptedException, ExecutionException{
 		
 		final GuavaCache gc=new GuavaCache();
-		final int parallelThread = 10;
+		final int parallelThread = 100;
 		
 		final Map<String, byte[]> familyData=new HashMap<String, byte[]>();
 		final Map<String, byte[]> animalData=new HashMap<String, byte[]>();
 		
 		familyData.put("FirstName", ConversionTools.convert(10));
-		familyData.put("SecondName", ConversionTools.convert("20"));
-		
+		familyData.put("SecondName", ConversionTools.convert(20));
 		gc.insertFamilyData(null, "Person", "300", "Props", familyData);
+		
 		
 		animalData.put("Age", ConversionTools.convert("20"));
 		animalData.put("Name", ConversionTools.convert("Lion"));
-		
 		gc.insertFamilyData(null, "Animal", "235", "Carnivore", animalData);
 		
-		Callable<Map<String, byte[]>> r = new Callable<Map<String, byte[]>>() {
+		
+		Callable<Tuple<String, Map<String, byte[]>>> r = new Callable<Tuple<String, Map<String, byte[]>>>() {
 			@Override
-			public Map<String, byte[]> call() throws Exception {
-					return gc.getFamilyData(null, "Person", "300", "props");
+			public Tuple<String, Map<String, byte[]>> call() throws Exception {
+				return new Tuple<String, Map<String, byte[]>>("Person", gc.getFamilyData(null, "Person", "300", "Props"));
 			}
 		};
 		
-		Callable<Map<String, byte[]>> rr = new Callable<Map<String, byte[]>>() {
+		Callable<Tuple<String, Map<String, byte[]>>> rr = new Callable<Tuple<String, Map<String, byte[]>>>() {
 			@Override
-			public Map<String, byte[]> call() throws Exception {
-					return gc.getFamilyData(null, "Animal", "235", "Carnivore");
+			public Tuple<String, Map<String, byte[]>> call() throws Exception {
+				return new Tuple<String, Map<String, byte[]>>("Animal", gc.getFamilyData(null, "Animal", "235", "Carnivore"));
 					
 			}
 		};
-		Collection<Future<Map<String, byte[]>>> results=new LinkedList<Future<Map<String,byte[]>>>();
+		Collection<Future<Tuple<String, Map<String, byte[]>>>> results=new LinkedList<Future<Tuple<String, Map<String, byte[]>>>>();
 		ExecutorService es= new FixedThreadPool(parallelThread);
 		for (int i = 0; i<parallelThread; i++){
 			if(i %2==0){
@@ -104,11 +106,15 @@ public class CacheTest {
 		}
 		es.shutdown();
 		
-		for(Future<Map<String, byte[]>> f : results){
-			System.out.println("++++++++++++" + f.get());
-			}
-		
-	}
+		for(Future<Tuple<String, Map<String, byte[]>>> f : results)
+		{
+			//System.out.println(f.get().getY());
+			if(f.get().getX().equals("Person")){
+				assertEquals(familyData, f.get().getY());}
+			else{assertEquals(animalData, f.get().getY());}
+			//System.out.println(f.get().getY());
+		}
+		}
 
 }
 
