@@ -1,5 +1,7 @@
 package com.googlecode.n_orm.cache.read.guava;
-
+/*
+ * My generic class, to put a marker on my test.
+ */
 public class Tuple<X,Y>{
 	public final X x;
 	public final Y y;
