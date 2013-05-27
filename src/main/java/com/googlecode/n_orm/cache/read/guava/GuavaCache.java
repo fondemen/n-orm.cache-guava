@@ -72,5 +72,15 @@ public class GuavaCache implements ICache {
 		this.TTL=TTL;
 
 	}
+	public boolean existsData(MetaInformation meta,
+			String table, String key,String family) throws CacheException{
+		if(this.getFamilyData(meta, table, key, family)!=null){
+			return true;
+		}
+		else{
+			return false;
+		}
+		
+	}
 
 }
