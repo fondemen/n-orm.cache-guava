@@ -49,5 +49,33 @@ public class GuavaCacheTest {
 		gc.setMaximunSize(200);
 		assertEquals(200, gc.getMaximunSize());
 	}
+	@Test
+	public void testReset() throws CacheException{
+		GuavaCache gc=new GuavaCache();
+		Map<String, byte[]> familyData=new HashMap<String, byte[]>();
+		byte[] Dupond = ConversionTools.convert("Dupont");
+		byte[] Jean = null;
+		byte[] age= ConversionTools.convert("10");
+		familyData.put("nom", Dupond);
+		familyData.put("Prenom", Jean);
+		familyData.put("age", age);
+		gc.insertFamilyData(null, "Person", "290", "props", familyData);
+		gc.reset();
+		long size=gc.size();
+		assertEquals(0,size);
+	}
+	@Test
+	public void testExistsData() throws CacheException{
+		GuavaCache gc=new GuavaCache();
+		Map<String, byte[]> familyData=new HashMap<String, byte[]>();
+		byte[] Dupond = ConversionTools.convert("Dupont");
+		byte[] Jean = null;
+		byte[] age= ConversionTools.convert("10");
+		familyData.put("nom", Dupond);
+		familyData.put("Prenom", Jean);
+		familyData.put("age", age);
+		gc.insertFamilyData(null, "Person", "290", "props", familyData);
+		assertEquals(true,gc.existsData(null, "Person", "290","props"));
+	}
 	
 }
