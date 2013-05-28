@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.googlecode.n_orm.conversion.ConversionTools;
+import com.googlecode.n_orm.storeapi.MetaInformation;
 
 public class Main {
 
@@ -21,6 +22,8 @@ public class Main {
 		gc.insertFamilyData(null, "Person", "300", "Props", familyData);
 		System.out.println(gc.getFamilyData(null, "Person", "300", "Props"));
 		System.out.println(gc.getFamilyData(null, "Person", "300", "Props"));
+		MetaInformation m=new MetaInformation();
+		gc.delete(null, "Person", "300");
 		System.out.println("++++++++++++++++" + gc.size());
 		
 		
