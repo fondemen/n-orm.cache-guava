@@ -20,7 +20,6 @@ import com.googlecode.n_orm.Persisting;
 import com.googlecode.n_orm.PersistingElement;
 import com.googlecode.n_orm.cache.read.guava.CacheException;
 import com.googlecode.n_orm.cache.read.guava.GuavaCache;
-import com.googlecode.n_orm.cache.read.guava.GuavaCacheStore;
 import com.googlecode.n_orm.cache.read.guava.Tuple;
 import com.googlecode.n_orm.cache.write.FixedThreadPool;
 import com.googlecode.n_orm.cf.ColumnFamily;
