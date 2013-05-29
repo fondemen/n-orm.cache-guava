@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -99,8 +100,6 @@ public class GuavaCacheStore extends DelegatingStore{
 			}
 		return false;
 		}
-
-	
 	
 	public ColumnFamilyData get(MetaInformation meta, String table, String id,
 			Set<String> families) throws DatabaseNotReachedException {
@@ -119,11 +118,9 @@ public class GuavaCacheStore extends DelegatingStore{
 			}
 			ColumnFamilyData dataStore = getActualStore().get(meta, table, id, familiesName);
 			
-			for(String cfd: dataStore.keySet()){
-				for(Map<String, byte[]> d: dataStore.values()){
-					dcfd.put(cfd, d);
-					cache.insertFamilyData(meta, table, id, cfd, d);
-				}	
+			for(Entry<String, Map<String, byte[]>> cfd: dataStore.entrySet()){
+				dcfd.put(cfd.getKey(), cfd.getValue());
+				cache.insertFamilyData(meta, table, id, cfd.getKey(), cfd.getValue());
 			}
 			return dcfd;
 		} catch (CacheException e) {
