@@ -7,31 +7,60 @@
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../n-orm/pom.xml</relativePath>
 	</parent>
-  <artifactId>cache-guava</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <dependencies>
-  	<dependency>
-    	<groupId>com.googlecode.n_orm</groupId>
-  		<artifactId>storage</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-    	<groupId>com.googlecode.n_orm</groupId>
-  		<artifactId>storage</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  		<scope>test</scope>
-  		<type>test-jar</type>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.google.guava</groupId>
-  		<artifactId>guava</artifactId>
-  		<version>14.0.1</version>
-  	</dependency>
-  	 <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <version>3.0</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+	<artifactId>cache-guava</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<dependencies>
+		<dependency>
+			<groupId>com.googlecode.n_orm</groupId>
+			<artifactId>storage</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.n_orm</groupId>
+			<artifactId>storage</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>test</scope>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>14.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>1.4</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<complianceLevel>1.6</complianceLevel>
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>com.googlecode.n_orm</groupId>
+							<artifactId>storage</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<!-- <goal>compile</goal> -->      <!-- use this goal to weave all your main classes -->
+							<goal>test-compile</goal>  <!-- use this goal to weave all your test classes -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+	</build>
 </project>
