@@ -20,8 +20,10 @@ import com.googlecode.n_orm.Persisting;
 import com.googlecode.n_orm.PersistingElement;
 import com.googlecode.n_orm.cache.read.guava.CacheException;
 import com.googlecode.n_orm.cache.read.guava.GuavaCache;
+import com.googlecode.n_orm.cache.read.guava.GuavaCacheStore;
 import com.googlecode.n_orm.cache.read.guava.Tuple;
 import com.googlecode.n_orm.cache.write.FixedThreadPool;
+import com.googlecode.n_orm.cf.ColumnFamily;
 import com.googlecode.n_orm.conversion.ConversionTools;
 import com.googlecode.n_orm.storeapi.MetaInformation;
 
@@ -190,7 +192,7 @@ public class CacheTest {
 	public static class Element{
 		@Key public String key;
 		public String familyName;
-		public Map<String, byte[]> familyData=new HashMap<String,byte[]>();
+		public Map<String, Integer> familyData=new HashMap<String,Integer>();
 	}
 	@Test
 	public void testDelete() throws CacheException{
@@ -198,10 +200,25 @@ public class CacheTest {
 		String key="tagada";
 		e.key=key;
 		e.familyName="props";
-		e.familyData.put("Age", new byte[5]);
-		e.familyData.put("name", new byte[10]);
+		e.familyData.put("Age", 12);
+		e.familyData.put("name", 23);
 		MetaInformation meta=new MetaInformation();
-		//meta.forElement(e);
+		meta.forElement(e);
+		GuavaCache gc=new GuavaCache();
+		Map<String, byte[]> data=new HashMap<String,byte[]>();
+		data.put("", new byte[10]);
+		data.put("", new byte[20]);
+		data.put("", new byte[30]);
+		
+		for (String cfn : e.getColumnFamilyNames()) {
+			ColumnFamily<?> cf = e.getColumnFamily(cfn);
+			System.out.println(cf.getName());
+		}
+		gc.insertFamilyData(meta, "table", key, "familyData", data);
+		System.out.println(gc.getFamilyData(meta, "table", key, "familyData"));
+		gc.delete(meta, "table", key);
+		System.out.println(gc.getFamilyData(meta, "table", key, "familyData"));
+		assertEquals(null,gc.getFamilyData(meta, "table", key, "familyData"));
 	}
 }
 
