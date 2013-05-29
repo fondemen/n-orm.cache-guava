@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.googlecode.n_orm.DatabaseNotReachedException;
 import com.googlecode.n_orm.cf.ColumnFamily;
@@ -42,28 +43,6 @@ public class GuavaCacheStore extends DelegatingStore{
 			
 	}
 	/**
-	 * Check if a collection of element exist in the cache
-	 */
-	
-	public boolean exists(MetaInformation meta, String table, String row)
-			throws DatabaseNotReachedException {
-		Collection<ColumnFamily<?>> cfs = meta.getElement().getColumnFamilies();
-		for (ColumnFamily<?> columnFamily : cfs){
-			String name=columnFamily.getName();
-			try {
-				if(cache.existsData(meta, table,row, name)){
-					return true;
-				 }
-				else{
-					return false;
-					}
-			} catch (CacheException e) {
-				new DatabaseNotReachedException("The element doesn't exist in the cache");
-			}
-			}
-		return false;
-		}
-	/**
 	 * check if an element exist in the cache
 	 */
 	public boolean exists(MetaInformation meta, String table, String row,
@@ -98,34 +77,59 @@ public class GuavaCacheStore extends DelegatingStore{
 		}
 		return null;
 	}
+	/**
+	 * Check if a collection of element exist in the cache
+	 */
+	
+	public boolean exists(MetaInformation meta, String table, String row)
+			throws DatabaseNotReachedException {
+		Collection<ColumnFamily<?>> cfs = meta.getElement().getColumnFamilies();
+		for (ColumnFamily<?> columnFamily : cfs){
+			String name=columnFamily.getName();
+			try {
+				if(cache.existsData(meta, table,row, name)){
+					return true;
+				 }
+				else{
+					return false;
+					}
+			} catch (CacheException e) {
+				new DatabaseNotReachedException("The element doesn't exist in the cache");
+			}
+			}
+		return false;
+		}
 
+	
+	
 	public ColumnFamilyData get(MetaInformation meta, String table, String id,
 			Set<String> families) throws DatabaseNotReachedException {
 		
 		try {
 			DefaultColumnFamilyData dcfd=new DefaultColumnFamilyData();
-			TreeMap<String, byte[]> familiesName=new TreeMap<String, byte[]>();
-			
-			for(String family : families){
-				familiesName.put(family, new byte[5]);	
-			}
-			for(String fname: familiesName.keySet()){
-				if(cache.existsData(meta, table, id, fname)){
-					dcfd.put(fname, get(meta, table,id, fname));
-					familiesName.remove(fname);
-				}
-				else{
-					Set<String> f=familiesName.keySet();
-					getActualStore().get(meta, table, id, f);
+			Set<String> familiesName=new TreeSet<String>(families);
+			Iterator it=familiesName.iterator();
+			while(it.hasNext()){
+				String name=(String)it.next();
+				Map<String, byte[]> data = cache.getFamilyData(meta, table, id, name);
+				if(data!=null){
+					dcfd.put(name, data);
+					it.remove();
 				}
 			}
+			ColumnFamilyData dataStore = getActualStore().get(meta, table, id, familiesName);
 			
+			for(String cfd: dataStore.keySet()){
+				for(Map<String, byte[]> d: dataStore.values()){
+					dcfd.put(cfd, d);
+					cache.insertFamilyData(meta, table, id, cfd, d);
+				}	
+			}
 			return dcfd;
 		} catch (CacheException e) {
 			new DatabaseNotReachedException("");
 		}
 		return null;
-	}	
-		
+	}
 }
 
