@@ -10,14 +10,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import javax.xml.crypto.Data;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.googlecode.n_orm.Key;
+import com.googlecode.n_orm.Persisting;
+import com.googlecode.n_orm.PersistingElement;
 import com.googlecode.n_orm.cache.read.guava.CacheException;
 import com.googlecode.n_orm.cache.read.guava.GuavaCache;
 import com.googlecode.n_orm.cache.read.guava.Tuple;
 import com.googlecode.n_orm.cache.write.FixedThreadPool;
 import com.googlecode.n_orm.conversion.ConversionTools;
+import com.googlecode.n_orm.storeapi.MetaInformation;
 
 
 public class CacheTest {
@@ -109,11 +115,93 @@ public class CacheTest {
 		for(Future<Tuple<String, Map<String, byte[]>>> f : results)
 		{
 			if(f.get().getX().equals("Person")){
-				assertEquals(familyData, f.get().getY());}
-			else{assertEquals(animalData, f.get().getY());}
-			//System.out.println(f.get().getY());
+				assertEquals(familyData, f.get().getY());
+				}
+			else{assertEquals(animalData, f.get().getY());
+			}
 		}
-		}
-
+	}
+	
+	@Test
+	public void testGetSize() throws Exception{
+		GuavaCache gc=new GuavaCache();
+		long size=0;
+		assertEquals(size, gc.size());
+	}
+	@Test
+	public void testGetMaximunSize() throws CacheException{
+		GuavaCache gc=new GuavaCache();
+		gc.setMaximunSize(200);
+		assertEquals(200, gc.getMaximunSize());
+	}
+	@Test
+	public void testGetTTL() throws CacheException {
+		GuavaCache gc=new GuavaCache();
+		gc.setTTL(20);
+		assertEquals(20, gc.getTTL());
+	}
+	@Test
+	public void testSetTTL() throws CacheException {
+		GuavaCache gc=new GuavaCache();
+		gc.setTTL(20);
+		assertEquals(20, gc.getTTL());
+		assertNotSame(10, gc.getTTL());
+	}
+	@Test
+	public void testSetMaximunSize() throws CacheException{
+		GuavaCache gc=new GuavaCache();
+		gc.setMaximunSize(200);
+		assertEquals(200, gc.getMaximunSize());
+	}
+	@Test
+	public void testReset() throws CacheException{
+		GuavaCache gc=new GuavaCache();
+		Map<String, byte[]> familyData=new HashMap<String, byte[]>();
+		byte[] Dupond = ConversionTools.convert("Dupont");
+		byte[] Jean = null;
+		byte[] age= ConversionTools.convert("10");
+		familyData.put("nom", Dupond);
+		familyData.put("Prenom", Jean);
+		familyData.put("age", age);
+		gc.insertFamilyData(null, "Person", "290", "props", familyData);
+		gc.reset();
+		long size=gc.size();
+		assertEquals(0,size);
+	}
+	@Test
+	public void testExistsData() throws CacheException{
+		GuavaCache gc=new GuavaCache();
+		GuavaCache gc2=new GuavaCache();
+		Map<String, byte[]> familyData=new HashMap<String, byte[]>();
+		byte[] Dupond = ConversionTools.convert("Dupont");
+		byte[] Jean = null;
+		byte[] age= ConversionTools.convert("10");
+		familyData.put("nom", Dupond);
+		familyData.put("Prenom", Jean);
+		familyData.put("age", age);
+		gc.insertFamilyData(null, "Person", "290", "props", familyData);
+		boolean t=gc.existsData(null, "Person", "290", "props");
+		assertTrue(t);
+		boolean tt=gc2.existsData(null, "table", "key", "family");
+		assertFalse(tt);
+		
+	}
+	@Persisting
+	public static class Element{
+		@Key public String key;
+		public String familyName;
+		public Map<String, byte[]> familyData=new HashMap<String,byte[]>();
+	}
+	@Test
+	public void testDelete() throws CacheException{
+		Element e=new Element();
+		String key="tagada";
+		e.key=key;
+		e.familyName="props";
+		e.familyData.put("Age", new byte[5]);
+		e.familyData.put("name", new byte[10]);
+		MetaInformation meta=new MetaInformation();
+		//meta.forElement(e);
+	}
 }
 

@@ -1,7 +1,10 @@
 package com.googlecode.n_orm.cache.read.guava;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import com.googlecode.n_orm.conversion.ConversionTools;
 import com.googlecode.n_orm.storeapi.MetaInformation;
@@ -25,6 +28,13 @@ public class Main {
 		MetaInformation m=new MetaInformation();
 		gc.delete(null, "Person", "300");
 		System.out.println("++++++++++++++++" + gc.size());
+		Set<String> data=new HashSet<String>();
+		data.add("A");
+		data.add("B");
+		data.add("C");
+		TreeMap<String, byte[]> t=new TreeMap<String,byte[]>();
+		
+	
 		
 		
 

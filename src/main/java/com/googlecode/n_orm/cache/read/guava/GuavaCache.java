@@ -24,15 +24,19 @@ public class GuavaCache implements ICache {
 				.expireAfterWrite(TTL, TimeUnit.SECONDS).build();
 
 	}
-
+	
 	public void delete(MetaInformation meta, String table, String key)
 			throws CacheException {
 		Collection<ColumnFamily<?>> cfs = meta.getElement().getColumnFamilies();
-		String familyName=cfs.getClass().getName();
-		String myKey = table.concat(key).concat(familyName);
-		cache.invalidate(myKey);
-
-	}
+		String familyName = null;
+		for (ColumnFamily<?> columnFamily : cfs) {
+			familyName=columnFamily.getName();
+			if(this.existsData(meta, table, key, familyName)){
+				String myKey = table.concat(key).concat(familyName);
+				cache.invalidate(myKey);
+				}
+			}
+		}
 
 	public void insertFamilyData(MetaInformation meta, String table,
 			String key, String family, Map<String, byte[]> familyData)

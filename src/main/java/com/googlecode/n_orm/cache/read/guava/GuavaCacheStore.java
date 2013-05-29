@@ -6,9 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import com.googlecode.n_orm.DatabaseNotReachedException;
 import com.googlecode.n_orm.cf.ColumnFamily;
+import com.googlecode.n_orm.conversion.ConversionTools;
 import com.googlecode.n_orm.storeapi.DefaultColumnFamilyData;
 import com.googlecode.n_orm.storeapi.DelegatingStore;
 import com.googlecode.n_orm.storeapi.MetaInformation;
@@ -16,14 +18,16 @@ import com.googlecode.n_orm.storeapi.Store;
 import com.googlecode.n_orm.storeapi.Row.ColumnFamilyData;
 
 public class GuavaCacheStore extends DelegatingStore{
-	private GuavaCache cache=new GuavaCache();
+	private ICache cache;
 	
 
-	public GuavaCacheStore(Store actualStore, GuavaCache gc) {
+	public GuavaCacheStore(Store actualStore, ICache cache) {
 		super(actualStore);
-		this.cache=gc;
+		this.cache = cache;	
 	}
-	public void delete(MetaInformation meta, String table, String id) {
+	
+	public void delete(MetaInformation meta, String table, String id) 
+			throws DatabaseNotReachedException {
 		Collection<ColumnFamily<?>> cfs = meta.getElement().getColumnFamilies();
 		String family=cfs.getClass().getName();
 		try {
@@ -37,20 +41,47 @@ public class GuavaCacheStore extends DelegatingStore{
 		}
 			
 	}
+	/**
+	 * Check if a collection of element exist in the cache
+	 */
 	
-	public boolean exists(MetaInformation meta, String table, String row) {
+	public boolean exists(MetaInformation meta, String table, String row)
+			throws DatabaseNotReachedException {
 		Collection<ColumnFamily<?>> cfs = meta.getElement().getColumnFamilies();
-		String family=cfs.getClass().getName();
+		for (ColumnFamily<?> columnFamily : cfs){
+			String name=columnFamily.getName();
+			try {
+				if(cache.existsData(meta, table,row, name)){
+					return true;
+				 }
+				else{
+					return false;
+					}
+			} catch (CacheException e) {
+				new DatabaseNotReachedException("The element doesn't exist in the cache");
+			}
+			}
+		return false;
+		}
+	/**
+	 * check if an element exist in the cache
+	 */
+	public boolean exists(MetaInformation meta, String table, String row,
+			String family) throws DatabaseNotReachedException {
+		String key=table.concat(row).concat(family);
 		try {
 			return cache.existsData(meta, table, row, family);
 		} catch (CacheException e) {
-			new DatabaseNotReachedException("The element does'nt exist in the cache");
+			new DatabaseNotReachedException("");
 		}
 		return false;
 	}
-	
+	/*
+	 * Check if an element is in the cache or in the store.
+	 * @see com.googlecode.n_orm.storeapi.DelegatingStore#get(com.googlecode.n_orm.storeapi.MetaInformation, java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public Map<String, byte[]> get(MetaInformation meta, String table,
-			String id, String family)  {
+			String id, String family) throws DatabaseNotReachedException {
 		try{
 		Map<String, byte[]> data= cache.getFamilyData(meta, table,id, family);
 		if(data!=null){
@@ -70,12 +101,30 @@ public class GuavaCacheStore extends DelegatingStore{
 
 	public ColumnFamilyData get(MetaInformation meta, String table, String id,
 			Set<String> families) throws DatabaseNotReachedException {
-		DefaultColumnFamilyData dcfd=new DefaultColumnFamilyData();
-		ArrayList<String> list=new ArrayList<String>();
-		list=(ArrayList<String>) families;
-		for(int i=0; i<list.size();i++){
-			dcfd.put(list.get(i), get(meta, table,id, list.get(i))); }
-		return dcfd;
+		
+		try {
+			DefaultColumnFamilyData dcfd=new DefaultColumnFamilyData();
+			TreeMap<String, byte[]> familiesName=new TreeMap<String, byte[]>();
+			
+			for(String family : families){
+				familiesName.put(family, new byte[5]);	
+			}
+			for(String fname: familiesName.keySet()){
+				if(cache.existsData(meta, table, id, fname)){
+					dcfd.put(fname, get(meta, table,id, fname));
+					familiesName.remove(fname);
+				}
+				else{
+					Set<String> f=familiesName.keySet();
+					getActualStore().get(meta, table, id, f);
+				}
+			}
+			
+			return dcfd;
+		} catch (CacheException e) {
+			new DatabaseNotReachedException("");
+		}
+		return null;
 	}	
 		
 }

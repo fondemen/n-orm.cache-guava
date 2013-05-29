@@ -44,5 +44,7 @@ public interface ICache {
 	 * for change the life of element in the cache
 	 */
 	public void setTTL(long TTL) throws CacheException;
+	public boolean existsData(MetaInformation meta, String table, String id,
+			String family) throws CacheException;
 
 }

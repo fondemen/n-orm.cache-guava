@@ -11,6 +11,7 @@ import com.googlecode.n_orm.cache.read.guava.CacheException;
 import com.googlecode.n_orm.cache.read.guava.GuavaCacheStore;
 import com.googlecode.n_orm.cache.read.guava.ICache;
 import com.googlecode.n_orm.conversion.ConversionTools;
+import com.googlecode.n_orm.storeapi.MetaInformation;
 import com.googlecode.n_orm.storeapi.Store;
 
 
@@ -42,6 +43,14 @@ public class GuavaCacheStoreTest {
 		sut.get(null, "table", "key", "family");
 		verify(mockCache);
 		
+	}
+	@Test
+	public void testExist() throws CacheException{
+		GuavaCacheStore gcs=new GuavaCacheStore(mockStore, mockCache);
+		expect(mockCache.existsData(null, "table", "key", "family")).andReturn(true);
+		replay(mockCache);
+		sut.exists(null, "table", "key", "family");
+		verify(mockCache);
 	}
 
 }
