@@ -108,9 +108,10 @@ public class GuavaCacheStore extends DelegatingStore{
 			DefaultColumnFamilyData dcfd=new DefaultColumnFamilyData();
 			Set<String> familiesName=new TreeSet<String>(families);
 			Iterator it=familiesName.iterator();
+			Map<String, byte[]> data;
 			while(it.hasNext()){
 				String name=(String)it.next();
-				Map<String, byte[]> data = cache.getFamilyData(meta, table, id, name);
+				 data = cache.getFamilyData(meta, table, id, name);
 				if(data!=null){
 					dcfd.put(name, data);
 					it.remove();
