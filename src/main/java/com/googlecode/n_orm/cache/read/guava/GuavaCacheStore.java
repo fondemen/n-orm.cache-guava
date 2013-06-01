@@ -2,6 +2,7 @@ package com.googlecode.n_orm.cache.read.guava;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -103,14 +104,15 @@ public class GuavaCacheStore extends DelegatingStore{
 	
 	public ColumnFamilyData get(MetaInformation meta, String table, String id,
 			Set<String> families) throws DatabaseNotReachedException {
-		
 		try {
 			DefaultColumnFamilyData dcfd=new DefaultColumnFamilyData();
 			Set<String> familiesName=new TreeSet<String>(families);
 			Iterator it=familiesName.iterator();
-			Map<String, byte[]> data;
+			String name=null;
+			Map<String, byte[]> data=new HashMap<String, byte[]>();
+			
 			while(it.hasNext()){
-				String name=(String)it.next();
+				name=(String)it.next();
 				 data = cache.getFamilyData(meta, table, id, name);
 				if(data!=null){
 					dcfd.put(name, data);
