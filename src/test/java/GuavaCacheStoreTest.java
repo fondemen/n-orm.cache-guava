@@ -1,4 +1,7 @@
 import static org.junit.Assert.*;
+import com.googlecode.n_orm.cache.read.CacheException;
+import com.googlecode.n_orm.cache.read.Element;
+import com.googlecode.n_orm.cache.read.ICache;
 import static org.easymock.EasyMock.*;
 
 import java.util.HashMap;
@@ -9,10 +12,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.googlecode.n_orm.cache.read.guava.CacheException;
 import com.googlecode.n_orm.cache.read.guava.GuavaCacheStore;
-import com.googlecode.n_orm.cache.read.guava.ICache;
 import com.googlecode.n_orm.conversion.ConversionTools;
 import com.googlecode.n_orm.storeapi.DefaultColumnFamilyData;
 import com.googlecode.n_orm.storeapi.MetaInformation;
@@ -28,7 +28,7 @@ public class GuavaCacheStoreTest {
 	@Before
 	public void setUp() throws Exception {
 		mockStore=createMock(Store.class);
-		mockCache=createMock(ICache.class);
+		mockCache=createMock(com.googlecode.n_orm.cache.read.ICache.class);
 		sut=new GuavaCacheStore(mockStore,mockCache);
 		
 	}
@@ -138,9 +138,9 @@ public class GuavaCacheStoreTest {
 		String name=null;
 		while(it.hasNext()){
 			name=(String)it.next();
-			expect(mockCache.getFamilyData(null, "table", "id", name)).andReturn(value);
-			expect(mockCache.getFamilyData(null, "table", "id", name)).andReturn(value);
-			expect(mockCache.getFamilyData(null, "table", "id", name)).andReturn(value);
+			expect(mockCache.getFamilyData(null, "table", "id", name.toString())).andReturn(value);
+			expect(mockCache.getFamilyData(null, "table", "id", name.toString())).andReturn(value);
+			expect(mockCache.getFamilyData(null, "table", "id", name.toString())).andReturn(value);
 		}
 		replay(mockCache,mockStore);
 		ColumnFamilyData v = sut.get(null, "table", "id", cachedFamilies);

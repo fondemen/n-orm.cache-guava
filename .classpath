@@ -32,5 +32,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/sweetbaby/Documents/WAMBA-TSAGUE/Projet 2A/hazelcast-1.9.4.8/lib/hazelcast-1.9.4.8.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
