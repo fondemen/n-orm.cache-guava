@@ -62,7 +62,7 @@ public class GuavaCacheStoreTest {
 		sut.exists(meta, "table", "key", "family");
 		verify(mockCache);
 	}
-	@Test
+	/*@Test
 	public void testDelete()throws CacheException{
 		Element e=new Element();
 		e.key="tagada";
@@ -75,7 +75,7 @@ public class GuavaCacheStoreTest {
 		replay(mockCache);
 		sut.delete(meta, "table", "key");
 		verify(mockCache);
-	}
+	}*/
 	/*public void testExists() throws CacheException{
 		Element e=new Element();
 		e.key="tagada";
@@ -90,12 +90,12 @@ public class GuavaCacheStoreTest {
 	}
 	*/
 		
-	public void testGets(Set<String> cachedFamilies,Set<String>storedFamilies) throws CacheException{
+	/*public void testGets(Set<String> cachedFamilies,Set<String>storedFamilies) throws CacheException{
 		Set<String> families=new HashSet<String>();
 		families.addAll(cachedFamilies);
 		families.addAll(storedFamilies);
 		sut.get(null, "table", "id", families);
-	}
+	}*/
 	
 	@Test
 	public void testDataStore() throws CacheException/*All data are from the store*/{
@@ -118,34 +118,6 @@ public class GuavaCacheStoreTest {
 		replay(mockCache,mockStore);
 		sut.get(null, "table", "id", storedFamilies);
 		verify(mockStore,mockCache);
-	}
-	
-	@Test
-	public void testDataCache() throws CacheException/*All data are from the cache, Nothing from the store*/{
-		Set<String> cachedFamilies = new HashSet<String>();
-		Set<String> families=new HashSet<String>();
-		Map<String, byte[]> value=new HashMap<String,byte[]>();
-		value.put("Toto", new byte[13]);
-		cachedFamilies.add("f1Cache");
-		cachedFamilies.add("f2Cache");
-		cachedFamilies.add("f3Cache");
-		families.addAll(cachedFamilies);	
-		
-		/*expect(mockCache.getFamilyData(null, "table", "id", "f1Cache")).andReturn(value);
-		expect(mockCache.getFamilyData(null, "table", "id", "f2Cache")).andReturn(value);
-		expect(mockCache.getFamilyData(null, "table", "id", "f3Cache")).andReturn(value);*/
-		Iterator it =cachedFamilies.iterator();
-		String name=null;
-		while(it.hasNext()){
-			name=(String)it.next();
-			expect(mockCache.getFamilyData(null, "table", "id", name.toString())).andReturn(value);
-			expect(mockCache.getFamilyData(null, "table", "id", name.toString())).andReturn(value);
-			expect(mockCache.getFamilyData(null, "table", "id", name.toString())).andReturn(value);
-		}
-		replay(mockCache,mockStore);
-		ColumnFamilyData v = sut.get(null, "table", "id", cachedFamilies);
-		System.out.println(v.toString());
-		verify(mockCache,mockStore);
 	}
 	@Test
 	public void test() throws CacheException{
