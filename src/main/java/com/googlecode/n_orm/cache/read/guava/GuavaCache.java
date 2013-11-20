@@ -15,7 +15,7 @@ import com.googlecode.n_orm.storeapi.MetaInformation;
 public class GuavaCache implements ICache {
 
 	private static int MAX_SIZE = 10;
-	private static long TTL = 2;
+	private static long TTL = 2000;
 	private final Cache<String,  Map<String, byte[]>> cache;
 
 	public GuavaCache() {

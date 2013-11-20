@@ -1,8 +1,11 @@
-import static org.junit.Assert.*;
+package com.googlecode.n_orm.cache.read.guava;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -10,17 +13,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import javax.xml.crypto.Data;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.googlecode.n_orm.Key;
 import com.googlecode.n_orm.Persisting;
-import com.googlecode.n_orm.PersistingElement;
-import com.googlecode.n_orm.cache.read.guava.CacheException;
+import com.googlecode.n_orm.cache.read.CacheException;
+import com.googlecode.n_orm.cache.read.Tuple;
 import com.googlecode.n_orm.cache.read.guava.GuavaCache;
-import com.googlecode.n_orm.cache.read.guava.Tuple;
 import com.googlecode.n_orm.cache.write.FixedThreadPool;
 import com.googlecode.n_orm.cf.ColumnFamily;
 import com.googlecode.n_orm.conversion.ConversionTools;
@@ -35,7 +35,7 @@ public class CacheTest {
 	}
 	
 	@Test
-	public void parallelGetFamilyData() throws InterruptedException, ExecutionException, CacheException{
+	public void parallelGetFamilyData() throws InterruptedException, ExecutionException, CacheException {
 		final GuavaCache gc=new GuavaCache();
 		final int parallelGet=10;
 		Map<String, byte[]> familyData=new HashMap<String, byte[]>();
