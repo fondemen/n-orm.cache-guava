@@ -1,0 +1,11 @@
+{
+	"class":"com.googlecode.n_orm.cache.read.guava.GuavaCacheStore",
+	"1": {
+		"class":"com.googlecode.n_orm.memory.Memory",
+		"singleton":"INSTANCE"
+	},
+	"enabledByDefault":false,
+	"ttl":25000,
+	"unit":"MICROSECONDS",
+	"maxSize":1024
+}
